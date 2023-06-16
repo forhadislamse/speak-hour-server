@@ -27,11 +27,22 @@ async function run() {
         await client.connect();
 
         const classesCollection = client.db("speakHourDb").collection("classes");
+        const selectCollection = client.db("speakHourDb").collection("selects");
 
+        //class collection
         app.get('/classes', async (req, res) => {
             const result = await classesCollection.find().toArray();
             res.send(result);
         })
+
+        //select collection 
+        app.post('/selects', async (req, res) => {
+            const item = req.body;
+            console.log(item);
+            const result = await selectCollection.insertOne(item);
+            res.send(result);
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
