@@ -26,9 +26,23 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
         client.connect();
-
+        const usersCollection = client.db("speakHourDb").collection("users");
         const classesCollection = client.db("speakHourDb").collection("classes");
         const selectCollection = client.db("speakHourDb").collection("selects");
+
+        // users collection
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            // const query = { email: user.email }
+            // const existingUser = await usersCollection.findOne(query);
+
+            // if (existingUser) {
+            //   return res.send({ message: 'user already exists' })
+            // }
+
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
 
         //class collection
         app.get('/classes', async (req, res) => {
@@ -49,17 +63,19 @@ async function run() {
             res.send(result);
         });
 
-        app.delete('/selects/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
-            const result = await selectCollection.deleteOne(query);
-            res.send(result);
-        })
 
         app.post('/selects', async (req, res) => {
             const item = req.body;
             // console.log(item);
             const result = await selectCollection.insertOne(item);
+            res.send(result);
+        })
+
+
+        app.delete('/selects/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await selectCollection.deleteOne(query);
             res.send(result);
         })
 
