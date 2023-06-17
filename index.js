@@ -33,12 +33,12 @@ async function run() {
         // users collection
         app.post('/users', async (req, res) => {
             const user = req.body;
-            // const query = { email: user.email }
-            // const existingUser = await usersCollection.findOne(query);
+            const query = { email: user.email }
+            const existingUser = await usersCollection.findOne(query);
 
-            // if (existingUser) {
-            //   return res.send({ message: 'user already exists' })
-            // }
+            if (existingUser) {
+                return res.send({ message: 'user already exists' })
+            }
 
             const result = await usersCollection.insertOne(user);
             res.send(result);
@@ -53,7 +53,7 @@ async function run() {
         //select collection 
         app.get('/selects', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
+            // console.log(email);
 
             if (!email) {
                 res.send([]);
