@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
@@ -24,7 +24,8 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
+        client.connect();
 
         const classesCollection = client.db("speakHourDb").collection("classes");
         const selectCollection = client.db("speakHourDb").collection("selects");
@@ -36,9 +37,28 @@ async function run() {
         })
 
         //select collection 
+        app.get('/selects', async (req, res) => {
+            const email = req.query.email;
+            console.log(email);
+
+            if (!email) {
+                res.send([]);
+            }
+            const query = { email: email };
+            const result = await selectCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.delete('/selects/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await selectCollection.deleteOne(query);
+            res.send(result);
+        })
+
         app.post('/selects', async (req, res) => {
             const item = req.body;
-            console.log(item);
+            // console.log(item);
             const result = await selectCollection.insertOne(item);
             res.send(result);
         })
